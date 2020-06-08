@@ -1,0 +1,49 @@
+/*
+  Icon Font: missing-icons
+*/
+
+@font-face {
+  font-family: "missing-icons";
+  src: url("./missing-icons.eot");
+  src: url("./missing-icons.eot?#iefix") format("embedded-opentype"),
+       url("./missing-icons.woff") format("woff"),
+       url("./missing-icons.ttf") format("truetype"),
+       url("./missing-icons.svg#missing-icons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "missing-icons";
+    src: url("./missing-icons.svg#missing-icons") format("svg");
+  }
+}
+
+[data-icon]:before { content: attr(data-icon); }
+
+[data-icon]:before,
+.i-as3:before,
+.i-jenkins:before,
+.i-memcached:before,
+.i-spring:before,
+.i-unity:before {
+  display: inline-block;
+  font-family: "missing-icons";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+}
+
+.i-as3:before { content: "\f100"; }
+.i-jenkins:before { content: "\f104"; }
+.i-memcached:before { content: "\f101"; }
+.i-spring:before { content: "\f102"; }
+.i-unity:before { content: "\f103"; }
