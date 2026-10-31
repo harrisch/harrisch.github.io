@@ -1,0 +1,275 @@
+/* ============================================================
+   harrischu.com — modern rebuild
+   Single stylesheet: custom properties, clamp() type scale,
+   no framework. Dark by default (the sky deserves it).
+   ============================================================ */
+
+:root {
+  --navy-0: #0b1526;
+  --navy-1: #111f36;
+  --navy-2: #0d1830;
+  --ink: #dfe9f5;
+  --muted: #8fa3bd;
+  --accent: #ff7a3c;
+  --card: rgba(255, 255, 255, 0.03);
+  --hairline: rgba(219, 230, 245, 0.12);
+  --space: 1rem;
+  --content-max: 62ch;
+  --side-pad: clamp(1.25rem, 6vw, 6rem);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(180deg, var(--navy-0) 0%, var(--navy-1) 50%, var(--navy-2) 100%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: rgba(255, 122, 60, 0.35); }
+
+/* ---------- type scale (fluid) ---------- */
+h1, h2 { line-height: 1.15; }
+h1 { font-size: clamp(2.6rem, 7vw, 4.5rem); letter-spacing: -0.02em; }
+h2 {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  letter-spacing: -0.02em;
+  margin: 0 0 1.5rem;
+}
+h3 { font-size: clamp(1.2rem, 2.2vw, 1.45rem); margin: 0 0 .25rem; }
+p  { max-width: var(--content-max); }
+
+a {
+  color: var(--ink);
+  text-decoration-color: rgba(255, 122, 60, 0.55);
+  text-underline-offset: 3px;
+  transition: color .15s ease, text-decoration-color .15s ease;
+}
+a:hover { color: #fff; text-decoration-color: var(--accent); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------- decorative layers ---------- */
+#sky { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+.sky-star { position: absolute; border-radius: 50%; background: #cfe0ff; }
+
+#streams {
+  position: fixed; inset: 0; z-index: 0;
+  pointer-events: none;
+}
+#streams svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.stream-line { fill: none; stroke-linecap: round; opacity: 0; }   /* invisible guide: measurable by JS, never shown */
+.s1 { stroke: #8fb8ff; stroke-width: 2.5; }
+.s2 { stroke: #7dd8d8; stroke-width: 2; }
+.s3 { stroke: #ffd0b3; stroke-width: 1.8; }
+.ghost-line { fill: none; stroke: #dbe6f5; stroke-width: 1; opacity: 0; }
+
+/* flash-style twinkle (grammar from web-dev.tech twinkle demo):
+   each star pops out of darkness to full brightness with a scale-up,
+   then falls back out — desynchronized feels キラキラ */
+@keyframes tw {
+  0%   { opacity: 0; transform: scale(.55); }
+  45%  { opacity: 1; transform: scale(1.22); }
+  100% { opacity: 0; transform: scale(.8); }
+}
+.tw {
+  transform-box: fill-box;      /* scale around the star itself, not the SVG origin */
+  transform-origin: center;
+  animation: tw var(--td, 4s) ease-in-out var(--de, 0s) infinite;
+}
+.big-star { fill: #eaf2ff; }      /* the demo had these two rules; they were lost when
+                                     style.css was written fresh — without them, SVG
+                                     defaults to BLACK fill. Never again. */
+.big-star.warm { fill: #ffd9c2; }
+/* halo: afterglow ring. animates opacity only (scaling a big soft disc looks wrong).
+   delayed a touch past its star so light seems to linger */
+@keyframes twHalo {
+  0%   { opacity: 0; }
+  45%  { opacity: .75; }
+  100% { opacity: 0; }
+}
+.tw-halo { animation: twHalo var(--td, 4s) ease-in-out var(--de, 0s) infinite; }
+/* dust grains along the ribbons: fade in/out only (no transform — hundreds of
+   animated SVG transforms would be too heavy; scale pulses stay on big stars) */
+@keyframes twDust {
+  0%   { opacity: 0; }
+  45%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+.tw-d {
+  animation: twDust var(--td, 4s) ease-in-out var(--de, 0s) infinite;
+}
+/* faint twinkle for a subset of the static sky stars */
+@keyframes skyTw {
+  0%, 100% { opacity: .18; }
+  50%      { opacity: .95; }
+}
+.sky-tw { animation: skyTw var(--sd, 3s) ease-in-out var(--sd2, 0s) infinite; }
+
+header.site-nav, main, footer { position: relative; z-index: 1; }
+
+/* ---------- fixed top nav ---------- */
+.site-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 10;
+  padding: .9rem var(--side-pad);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  background: rgba(11, 21, 38, 0.55);
+  border-bottom: 1px solid var(--hairline);
+}
+.site-nav nav { display: flex; gap: clamp(1rem, 3vw, 2.25rem); max-width: 70rem; margin: 0 auto; }
+.site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.site-nav a:hover { color: #fff; }
+
+/* ---------- sections ---------- */
+section, footer {
+  padding: clamp(4rem, 10vh, 8rem) var(--side-pad);
+  scroll-margin-top: 4.5rem; /* fixed nav never eats section tops */
+}
+
+section { max-width: 70rem; margin: 0 auto; }
+footer { max-width: 70rem; margin: 0 auto; color: var(--muted); font-size: .85rem; }
+
+.hero {
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+  row-gap: 2.25rem;
+}
+.hero-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(1.25rem, 3.5vw, 2.5rem);
+  flex-wrap: wrap;
+}
+.hero-line {
+  font-size: clamp(1.1rem, 2.2vw, 1.4rem);
+  color: var(--muted);
+  margin: 1rem 0 2rem;
+}
+.accent { color: var(--accent); font-weight: 600; }
+.accent a { color: inherit; }
+
+.socials { display: flex; gap: 1.1rem; }
+.socials a {
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: .55rem .9rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  transition: color .15s ease, border-color .15s ease, background .15s ease;
+}
+.socials a:hover {
+  color: #fff;
+  border-color: rgba(255, 122, 60, .6);
+  background: rgba(255, 122, 60, .08);
+}
+
+/* ---------- work entries ---------- */
+.job {
+  margin-bottom: 3.25rem;
+  padding-left: 1.25rem;
+  border-left: 2px solid var(--hairline);
+}
+.job .meta-line {
+  margin: 0 0 .9rem;
+  font-size: .95rem;
+  color: var(--muted);
+}
+.job .role { color: var(--accent); font-weight: 600; }
+.dotsep { margin: 0 .5em; opacity: .6; }
+.job p { margin: 0 0 .75rem; }
+
+.earlier-note {
+  color: var(--muted);
+  font-size: .9rem;
+  font-style: italic;
+  margin-left: 1.25rem;
+}
+
+/* ---------- skills chips ---------- */
+.chip-group { margin-bottom: 1.75rem; }
+.chip-group h3 {
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 .75rem;
+}
+.chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin: 0;
+  padding: 0;
+}
+.chips li {
+  padding: .45rem .95rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--card);
+  font-size: .9rem;
+  white-space: nowrap;
+}
+
+/* ---------- CTA buttons ---------- */
+.cta {
+  display: inline-block;
+  padding: .8rem 1.6rem;
+  border: 1px solid rgba(255, 122, 60, .5);
+  border-radius: 999px;
+  background: rgba(255, 122, 60, .08);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease;
+}
+.cta:hover {
+  background: rgba(255, 122, 60, .16);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* ---------- motion safety ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .tw { animation: none; opacity: .85; transform: none; }
+  .tw-halo { animation: none; opacity: .55; }
+  .sky-tw { animation: none; opacity: .55; }
+  .tw-d { animation: none; }
+  .cta { transition: none; }
+  .cta:hover { transform: none; }
+}
+
+/* ---------- small screens: calm the sky ---------- */
+@media (max-width: 768px) {
+  section { padding-inline: 1.25rem; }
+  .site-nav nav { justify-content: flex-start; }
+}
